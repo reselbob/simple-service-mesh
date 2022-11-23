@@ -1,3 +1,6 @@
+.idea
+.env
+nohup.out
 # Logs
 logs
 *.log
@@ -69,7 +72,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+recommendations/.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
