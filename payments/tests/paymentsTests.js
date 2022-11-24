@@ -72,7 +72,29 @@ describe('Payments Tests: ', () => {
         shutdown();
     });
 
-    it('Can access GET items', async () =>{
+    it('Can access GET items', async () => {
+        for (let i = 0; i < 10; i++) {
+            const payload = getPayment();
+            await supertest(server)
+                .post('/api/')
+                .set('Accept', 'application/json')
+                .send(payload)
+                .then((res) => {
+                    console.log(res)
+                })
+        }
+        await supertest(server)
+            .get(`/api/`)
+            .set('Accept', 'application/json')
+            .then((res) => {
+                expect(res.body).to.be.an('array');
+                expect(res.body.length).to.eq(10)
+                console.log(res.body);
+            });
+    });
+
+    it('Can access GET item by id', async () => {
+        const payloads = []
         for(let i = 0; i<10;i++){
             const payload = getPayment();
             await supertest(server)
@@ -81,17 +103,20 @@ describe('Payments Tests: ', () => {
                 .send(payload)
                 .then((res) => {
                     console.log(res.body);
+                    payloads.push(res.body)
                 })
         }
+        const data  = _.sample(payloads)
 
         await supertest(server)
-            .get('/api/')
+            .get(`/api/${data.payment.id}`)
             .set('Accept', 'application/json')
             .then((res) => {
-                expect(res.body).to.be.an('array');
-                expect(res.body.length).to.eq(10);
+                expect(res.body).to.be.an('object');
+                expect(res.body.id).to.be.eq(data.payment.id);
                 console.log(res.body);
             })
+
     });
 
     it('Can access POST item', async () => {

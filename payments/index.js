@@ -46,7 +46,10 @@ const port = process.env.SERVER_PORT || 8080;
 
 
 app.get('/api/:id', async(req, res) => {
-    res.status(500).send({message: 'Not Implemented'});
+    let payment = _.find(payments, (obj) => {
+        if (obj.id === req.params.id )return true;
+    });
+    res.status(200).send(payment);
 });
 
 app.get('/api/', async(req, res) => {
