@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const {logger} = require("./logger");
 const _ = require('lodash')
-const e = require("express");
 require('dotenv').config()
 process.title = 'simple_service_mesh_customers'
 

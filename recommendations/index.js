@@ -67,6 +67,10 @@ app.get('/api/', async(req, res) => {
     res.status(200).send(getRecommendation());
 });
 
+app.get('/', async(req, res) => {
+    res.status(200).send({message: 'Hello from Recommendations'});
+});
+
 server = app.listen(port, () => {
     logger.info(`Recommendation service is running on port ${port} at ${new Date()}`);
 });

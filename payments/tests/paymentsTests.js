@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const describe = require('mocha').describe;
 const it = require('mocha').it;
 const _ = require('lodash')
+const {faker} = require('@faker-js/faker');
 
 const {server,shutdown} = require('../index');
 
@@ -28,6 +29,14 @@ const getProducts = () =>{
     products.push({id, category, description, price});
 
     return products;
+}
+const getCreditCard = (customer) => {
+    return {
+        number: faker.finance.creditCardNumber(),
+        expirationDate: faker.date.future(3),
+        cvv: faker.finance.creditCardCVV(),
+        cardHolder: customer
+    };
 }
 
 const getCustomers = () =>{
@@ -62,9 +71,10 @@ const getCustomers = () =>{
 const getPayment = () => {
     const product = _.sample(getProducts());
     const customer = _.sample(getCustomers());
+    const creditCard = getCreditCard(customer)
     const purchaseDate = Date.now();
 
-    return {customer, product,purchaseDate}
+    return {customer, product,creditCard,purchaseDate}
 }
 
 describe('Payments Tests: ', () => {
@@ -130,6 +140,7 @@ describe('Payments Tests: ', () => {
                 expect(res.body.payment.customer.firstName).to.eq(payload.customer.firstName);
                 expect(res.body.payment.product.description).to.eq(payload.product.description);
                 expect(res.body.payment.id).to.be.a('string');
+                expect(res.body.payment.creditCard.authorizationCode).to.be.a('string');
                 expect(res.body.status).to.eq(200);
                 console.log(res.body);
             })

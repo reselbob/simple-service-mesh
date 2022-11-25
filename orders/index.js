@@ -2,14 +2,37 @@ const express = require('express');
 const app = express();
 const {logger} = require("./logger");
 const _ = require('lodash')
+const axios = require("axios");
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()
-process.title = 'simple_service_mesh_payments'
+process.title = 'simple_service_mesh_orders'
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-const payments = [];
+const orders = [];
+
+//Get URLs of external services
+
+const validateService = async (service, url) => {
+    const response = await axios.get(url)
+        .then(function (response) {
+            console.log(response);
+            return response.status;
+        })
+        .catch(function (error) {
+            //console.log(error);
+            throw new Error(`${service} is not active. Error message: ${error.message}`);
+        })
+}
+
+if(!process.env.PAYMENTS_URL) throw new Error('No value defined for the required environment variable PAYMENTS_URL');
+if(!process.env.RECOMMENDATIONS_URL) throw new Error('No value defined for the required environment variable RECOMMENDATIONS_URL');
+
+validateService('Payments', process.env.PAYMENTS_URL);
+validateService('Recommendations', process.env.RECOMMENDATIONS_URL);
+
+const port = process.env.SERVER_PORT || 8080;
 /**
  * Converts the request.rawHeaders array into a JSON object
  *
@@ -41,33 +64,28 @@ app.use((req, res, next) => {
     next();
 });
 
-const port = process.env.SERVER_PORT || 8080;
-
-
 app.get('/api/:id', async(req, res) => {
-    let payment = _.find(payments, (obj) => {
+    let order = _.find(orders, (obj) => {
         if (obj.id === req.params.id )return true;
     });
-    res.status(200).send(payment);
+    res.status(200).send(order);
 });
 
 app.get('/api/', async(req, res) => {
-    res.status(200).send(payments);
+    res.status(200).send(orders);
 });
-
-app.get('/', async(req, res) => {
-    res.status(200).send({message: 'Hello from Payments'});
-});
-
 
 app.post('/api/', async(req, res) => {
     const data = req.body;
-    data.id = uuidv4();
-    data.creditCard.authorizationCode = uuidv4();
-    payments.push(data);
-    logger.info(`Posting ${JSON.stringify(data)}`);
-
-    res.status(200).send({status: 200, payment: data});
+    //post to payments
+    const paymentResult = await axios.post(process.env.PAYMENTS_URL, data);
+    // get recommendation
+    const recommendation = await axios.get(process.env.RECOMMENDATIONS_URL);
+    const result = {payment: paymentResult.data.payment, recommendation:recommendation.data }
+    result.id = uuidv4();
+    orders.push(result);
+    logger.info(`Posting ${JSON.stringify(result)}`);
+    res.status(200).send({status: 200, order: result});
 });
 
 server = app.listen(port, () => {
