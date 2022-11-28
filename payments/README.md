@@ -1,8 +1,10 @@
 # Payments
 
-## Example
+## Environment Variables
 
-### Submission
+`SERVER_PORT`, the port on which the service listens for request. Defaults to 8080, if not set.
+
+## Submission Example
 
 ```json
 {
@@ -33,7 +35,7 @@
 }
 ```
 
-### Response
+## Response
 
 ```json
 {
