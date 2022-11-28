@@ -44,14 +44,14 @@ app.use((req, res, next) => {
 const port = process.env.SERVER_PORT || 8080;
 
 
-app.get('/api/:id', async(req, res) => {
+app.get('/:id', async(req, res) => {
     let payment = _.find(payments, (obj) => {
         if (obj.id === req.params.id )return true;
     });
     res.status(200).send(payment);
 });
 
-app.get('/api/', async(req, res) => {
+app.get('/', async(req, res) => {
     res.status(200).send(payments);
 });
 
@@ -60,7 +60,7 @@ app.get('/', async(req, res) => {
 });
 
 
-app.post('/api/', async(req, res) => {
+app.post('/', async(req, res) => {
     const data = req.body;
     data.id = uuidv4();
     data.creditCard.authorizationCode = uuidv4();

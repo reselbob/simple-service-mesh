@@ -87,7 +87,7 @@ describe('Orders Tests: ', () => {
         for (let i = 0; i < 10; i++) {
             const order = getOrder();
             await supertest(server)
-                .post('/api/')
+                .post('/')
                 .set('Accept', 'application/json')
                 .send(order)
                 .then((res) => {
@@ -95,7 +95,7 @@ describe('Orders Tests: ', () => {
                 })
         }
         await supertest(server)
-            .get(`/api/`)
+            .get(`/`)
             .set('Accept', 'application/json')
             .then((res) => {
                 expect(res.body).to.be.an('array');
@@ -109,7 +109,7 @@ describe('Orders Tests: ', () => {
         for(let i = 0; i<10;i++){
             const payload = getOrder();
             await supertest(server)
-                .post('/api/')
+                .post('/')
                 .set('Accept', 'application/json')
                 .send(payload)
                 .then((res) => {
@@ -120,7 +120,7 @@ describe('Orders Tests: ', () => {
         const data  = _.sample(payloads)
 
         await supertest(server)
-            .get(`/api/${data.order.id}`)
+            .get(`/${data.order.id}`)
             .set('Accept', 'application/json')
             .then((res) => {
                 expect(res.body).to.be.an('object');
@@ -133,7 +133,7 @@ describe('Orders Tests: ', () => {
     it('Can access POST item', async () => {
         const payload = getOrder();
         await supertest(server)
-            .post('/api/')
+            .post('/')
             .set('Accept', 'application/json')
             .send(payload)
             .then((res) => {

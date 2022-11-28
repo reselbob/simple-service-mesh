@@ -31,7 +31,7 @@ describe('API Tests: ', () => {
     it('Can access GET food rec', async () => {
         await changeEnvFile('food');
         await supertest(server)
-            .get('/api')
+            .get('/')
             .set('Accept', 'application/json')
             .then((res) => {
                 expect(res.body).to.be.an('object');

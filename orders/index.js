@@ -64,18 +64,18 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/api/:id', async(req, res) => {
+app.get('/:id', async(req, res) => {
     let order = _.find(orders, (obj) => {
         if (obj.id === req.params.id )return true;
     });
     res.status(200).send(order);
 });
 
-app.get('/api/', async(req, res) => {
+app.get('/', async(req, res) => {
     res.status(200).send(orders);
 });
 
-app.post('/api/', async(req, res) => {
+app.post('/', async(req, res) => {
     const data = req.body;
     //post to payments
     const paymentResult = await axios.post(process.env.PAYMENTS_URL, data);

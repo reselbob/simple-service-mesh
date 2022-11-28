@@ -86,7 +86,7 @@ describe('Payments Tests: ', () => {
         for (let i = 0; i < 10; i++) {
             const payload = getPayment();
             await supertest(server)
-                .post('/api/')
+                .post('/')
                 .set('Accept', 'application/json')
                 .send(payload)
                 .then((res) => {
@@ -94,7 +94,7 @@ describe('Payments Tests: ', () => {
                 })
         }
         await supertest(server)
-            .get(`/api/`)
+            .get(`/`)
             .set('Accept', 'application/json')
             .then((res) => {
                 expect(res.body).to.be.an('array');
@@ -108,7 +108,7 @@ describe('Payments Tests: ', () => {
         for(let i = 0; i<10;i++){
             const payload = getPayment();
             await supertest(server)
-                .post('/api/')
+                .post('/')
                 .set('Accept', 'application/json')
                 .send(payload)
                 .then((res) => {
@@ -119,7 +119,7 @@ describe('Payments Tests: ', () => {
         const data  = _.sample(payloads)
 
         await supertest(server)
-            .get(`/api/${data.payment.id}`)
+            .get(`/${data.payment.id}`)
             .set('Accept', 'application/json')
             .then((res) => {
                 expect(res.body).to.be.an('object');
@@ -132,7 +132,7 @@ describe('Payments Tests: ', () => {
     it('Can access POST item', async () => {
         const payload = getPayment();
         await supertest(server)
-            .post('/api/')
+            .post('/')
             .set('Accept', 'application/json')
             .send(payload)
             .then((res) => {
