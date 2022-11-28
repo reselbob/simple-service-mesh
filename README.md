@@ -5,4 +5,6 @@ This project has three Node.Js applications, `Orders`, `Payments` and `Recommend
 
 The dependency chain for the services is that `Orders` uses both `Payments` and `Recommendations`. See the `readme` files in each subordinate project to learn the details for running the given service.
 
-Each service is intended to be encapsulated and deployed as a Linux container image hosted in a container image registry and then deployed into a Kubernetes cluster as a container. 
+Each service is intended to be encapsulated and deployed as a Linux container image hosted in a container image registry and then deployed into a Kubernetes cluster as a container.
+
+The bash script for building and pushing container images to a container registry using [`buildah`](https://buildah.io/) is [buildah.sh](buildah.sh). The script's default container registry is `quay.io`. Adjust the bash script accordingly to meet your needs. 
