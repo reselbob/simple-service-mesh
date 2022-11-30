@@ -3,12 +3,13 @@ const app = express();
 const {logger} = require("./logger");
 const _ = require('lodash')
 const axios = require("axios");
-const { v4: uuidv4 } = require('uuid');
+const https = require("https");
+const {v4: uuidv4} = require('uuid');
 require('dotenv').config();
 const cors = require('cors');
 process.title = 'simple_service_mesh_orders'
 
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(cors());
 
@@ -28,8 +29,8 @@ const validateService = async (service, url) => {
         })
 }
 
-if(!process.env.PAYMENTS_URL) throw new Error('No value defined for the required environment variable PAYMENTS_URL');
-if(!process.env.RECOMMENDATIONS_URL) throw new Error('No value defined for the required environment variable RECOMMENDATIONS_URL');
+if (!process.env.PAYMENTS_URL) throw new Error('No value defined for the required environment variable PAYMENTS_URL');
+if (!process.env.RECOMMENDATIONS_URL) throw new Error('No value defined for the required environment variable RECOMMENDATIONS_URL');
 
 validateService('Payments', process.env.PAYMENTS_URL);
 validateService('Recommendations', process.env.RECOMMENDATIONS_URL);
@@ -42,17 +43,16 @@ const port = process.env.SERVER_PORT || 8080;
  * @returns {{}} a JSON object that reports the raw header information
  * in the request
  */
-const parseRawHeader = (arr)=> {
+const parseRawHeader = (arr) => {
     let obj = {};
-    let currentKey='';
-    for(let i=0; i < arr.length; i++){
-        if (i % 2 == 0){
+    let currentKey = '';
+    for (let i = 0; i < arr.length; i++) {
+        if (i % 2 == 0) {
             //this is the key
             currentKey = arr[i];
-            obj[currentKey]='';
-        }else
-        {
-            obj[currentKey]=arr[i]
+            obj[currentKey] = '';
+        } else {
+            obj[currentKey] = arr[i]
         }
     }
     return obj;
@@ -66,24 +66,54 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/:id', async(req, res) => {
+app.get('/:id', async (req, res) => {
     let order = _.find(orders, (obj) => {
-        if (obj.id === req.params.id )return true;
+        if (obj.id === req.params.id) return true;
     });
     res.status(200).send(order);
 });
 
-app.get('/', async(req, res) => {
+app.get('/', async (req, res) => {
     res.status(200).send(orders);
 });
 
-app.post('/', async(req, res) => {
+const validatePostData = (data) => {
+    const errors = [];
+    if(!data.creditCard) errors.push("Missing credit card data\n");
+    if(!data.product) errors.push("Missing product data\n");
+    if(!data.customer) errors.push("Missing customer data\n");
+
+    if(errors.length > 0){
+        throw new Error(`There are problems with the order's data: ${JSON.stringify(errors)}`)
+    }
+}
+app.post('/', async (req, res) => {
     const data = req.body;
+    try {
+        validatePostData(data);
+    } catch (e) {
+        res.status(422).send({status: 422, message: e.message});
+        return;
+    }
+
     //post to payments
-    const paymentResult = await axios.post(process.env.PAYMENTS_URL, data);
+    const config = {timeout: 5000};
+    const paymentResult = await axios.post(process.env.PAYMENTS_URL, data,config )
+        .catch(e => {
+            logger.error(e.message)
+        });
     // get recommendation
-    const recommendation = await axios.get(process.env.RECOMMENDATIONS_URL);
-    const result = {payment: paymentResult.data.payment, recommendation:recommendation.data }
+    const recommendation = await axios.get(process.env.RECOMMENDATIONS_URL)
+        .catch(e => {
+            logger.error(e.message)
+        });
+    try {
+        const result = {payment: paymentResult.data.payment, recommendation: recommendation.data}
+    } catch (e) {
+        logger.error(e.message);
+        res.status(500).send({status: 500, message: e});
+        return;
+    }
     result.id = uuidv4();
     orders.push(result);
     logger.info(`Posting ${JSON.stringify(result)}`);

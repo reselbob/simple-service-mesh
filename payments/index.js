@@ -58,8 +58,49 @@ app.get('/', async(req, res) => {
     res.status(200).send(payments);
 });
 
+const validations = [
+    'creditCard.number',
+    'creditCard.expirationDate',
+    'creditCard.cvv',
+    'creditCard.cardHolder.id',
+    'creditCard.cardHolder.id',
+    'creditCard.cardHolder.firstName',
+    'creditCard.cardHolder.lastName',
+    'creditCard.cardHolder.email',
+    'customer.id',
+    'customer.firstName',
+    'customer.lastName',
+    'customer.email',
+    'product.id',
+    'product.category',
+    'product.description',
+    'product.price',
+    'purchaseDate'
+];
+
+/**
+ * Poor man's data validation. If only I had more time...
+ * @param data
+ */
+const validatePostData = (data) => {
+    const errors = [];
+    if(!data.creditCard) errors.push("Missing credit card data\n");
+    if(!data.product) errors.push("Missing product data\n");
+    if(!data.customer) errors.push("Missing customer data\n");
+
+    if(errors.length > 0){
+        throw new Error(`There are problems with the order's data: ${JSON.stringify(errors)}`)
+    }
+}
+
 app.post('/', async(req, res) => {
     const data = req.body;
+    try {
+        validatePostData(data);
+    } catch (e) {
+        res.status(422).send({status: 422, message: e.message});
+        return;
+    }
     data.id = uuidv4();
     data.creditCard.authorizationCode = uuidv4();
     payments.push(data);

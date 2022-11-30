@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 const {logger} = require("./logger");
 const _ = require('lodash')
-require('dotenv').config()
+require('dotenv').config();
+const cors = require('cors');
 process.title = 'simple_service_mesh_recommendations'
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cors());
 /**
  * Converts the request.rawHeaders array into a JSON object
  *
