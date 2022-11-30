@@ -107,8 +107,9 @@ app.post('/', async (req, res) => {
         .catch(e => {
             logger.error(e.message)
         });
+    let result = {};
     try {
-        const result = {payment: paymentResult.data.payment, recommendation: recommendation.data}
+        result = {payment: paymentResult.data.payment, recommendation: recommendation.data}
     } catch (e) {
         logger.error(e.message);
         res.status(500).send({status: 500, message: e});
