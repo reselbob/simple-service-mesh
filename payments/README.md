@@ -10,7 +10,7 @@
 {
   "creditCard": {
     "number": "5555 4444 3333 2222",
-    "expiration date": "2025-11-23T09:38:28.710Z",
+    "expirationDate": "2025-11-23T09:38:28.710Z",
     "cvv": 453,
     "cardHolder": {
       "id": 4,
