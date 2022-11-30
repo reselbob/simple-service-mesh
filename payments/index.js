@@ -3,12 +3,13 @@ const app = express();
 const {logger} = require("./logger");
 const _ = require('lodash')
 const { v4: uuidv4 } = require('uuid');
-require('dotenv').config()
+const cors = require('cors');
+require('dotenv').config();
 process.title = 'simple_service_mesh_payments'
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
-
+app.use(cors());
 const payments = [];
 /**
  * Converts the request.rawHeaders array into a JSON object
@@ -32,6 +33,8 @@ const parseRawHeader = (arr)=> {
     }
     return obj;
 }
+
+
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
