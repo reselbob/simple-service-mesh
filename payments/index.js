@@ -55,11 +55,6 @@ app.get('/', async(req, res) => {
     res.status(200).send(payments);
 });
 
-app.get('/', async(req, res) => {
-    res.status(200).send({message: 'Hello from Payments'});
-});
-
-
 app.post('/', async(req, res) => {
     const data = req.body;
     data.id = uuidv4();
