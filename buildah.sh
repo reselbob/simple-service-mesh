@@ -12,12 +12,12 @@ cd ..
 
 cd ./recommendations
 buildah bud -t service-mesh-recommendations Containerfile
-buildah push localhost/service-mesh-recommendations REPO_URL/$REPO_USER_NAME/service-mesh-recommendations:v1.0
+buildah push localhost/service-mesh-recommendations $REPO_URL/$REPO_USER_NAME/service-mesh-recommendations:v1.0
 
 cd ..
 
 cd ./orders
 buildah bud -t service-mesh-orders Containerfile
-buildah push localhost/service-mesh-orders REPO_URL/$REPO_USER_NAME/service-mesh-orders:v1.0
+buildah push localhost/service-mesh-orders $REPO_URL/$REPO_USER_NAME/service-mesh-orders:v1.0
 
 
